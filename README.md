@@ -16,14 +16,14 @@ You can add `--no-mods` launch option (in Steam) to temporarily disable MelonLoa
 Some of these mods are ports of my (now-dead) [VRChat mods](https://github.com/knah/VRCMods). You can take a peek there if you're curious about history.
 
 ## Lag Free Screenshots
-A fork if this mod is currently maintained by @dakyneko [here](https://github.com/dakyneko/DakyModsCVR).
+A fork of this mod is currently maintained by @dakyneko [here](https://github.com/dakyneko/DakyModsCVR).
 
 ## MirrorResolutionUnlimiter
 This mod adds a few extra options to fine-tune mirror look and performance. Doesn't actually change resolution limit yet.
 
 Note that increasing mirror texture resolution will increase VRAM usage and lower performance, as your GPU will have to do more work.
 
-If UI Expansion Kit is installed, its settings page in the main menu will get two buttons to optimize and beautify all visible mirrors in the world.
+If UI Expansion Kit is installed, mod settings page in the main menu will get two buttons to optimize and beautify all visible mirrors in the world.
 
 Settings:
 * Force auto resolution - removes mirror resolution limits set by world maker. Off by default.
