@@ -1,0 +1,6 @@
+bin/
+obj/
+.idea/
+Libs/*.dll
+*.user
+Output/

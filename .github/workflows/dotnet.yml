@@ -1,0 +1,45 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  create:
+    tags:
+     - '*'
+
+jobs:
+  build:
+    
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Checkout libs
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ secrets.LibsRepository }}
+        ssh-key: ${{ secrets.LibsSshPrivateKey }}
+        path: Libs
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+      
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore
+      
+    - name: Publish a release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        body_path: ReleaseChangelog.md
+        files: |
+          Output/Debug/net472/MirrorResolutionUnlimiter.dll
+          Output/Debug/net472/UIExpansionKit.dll
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="WebUi\Js\main-menu-inject.js" />
+      <EmbeddedResource Include="WebUi\Js\global-id-handler.js" />
+      <EmbeddedResource Include="WebUi\Js\twemoji-melon.svg" />
+    </ItemGroup>
+
+</Project>
