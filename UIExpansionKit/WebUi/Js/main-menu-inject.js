@@ -1,6 +1,9 @@
 
 let handlerMap = {}
 let visibilityHandlerMap = {}
+let lastStringElement = {}
+let lastStringCategory = ""
+let lastStringEntry = ""
 
 function inp_toggle_uix(_obj) {
     let result = {}
@@ -189,11 +192,19 @@ engine.on("UixSettingVisibilityUpdated", function(cat, entry, visible) {
     }
 })
 
-function UIX_StringSettingUpdated(_e) {
-    let cat = _e.getAttribute('data-uix-cat')
-    let entry = _e.getAttribute('data-uix-entry')
+function UIX_StringOpenKeyboard(element) {
+    lastStringCategory = element.getAttribute('data-uix-cat')
+    lastStringEntry = element.getAttribute('data-uix-entry')
+    lastStringElement = element;
+    displayKeyboard(element);
+}
 
-    engine.trigger("UixSetString", cat, entry, _e.value)
+function UIX_StringSettingUpdated() {
+    if(lastStringElement === null) return;
+    if(lastStringEntry === "") return;
+    if(lastStringCategory === "") return;
+
+    engine.trigger("UixSetString", lastStringCategory, lastStringEntry, lastStringElement.value)
 }
 
 function switchUixCat(_id, _e) {

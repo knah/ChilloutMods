@@ -79,7 +79,7 @@ public class HtmlEntriesGenerator
 
     internal static string GetTextInputEntry(MelonPreferences_Entry<string> entry)
     {
-        return $"<input {GetCommonData(entry)} type=\"text\" class=\"inp_search\" data-submit=\"UIX_StringSettingUpdated(this);\" onclick=\"displayKeyboard(this);\" />";
+        return $"<input {GetCommonData(entry)} type=\"text\" class=\"inp_search\" data-submit=\"UIX_StringSettingUpdated();\" onclick=\"UIX_StringOpenKeyboard(this);\" />";
     }
 
     internal static string GetNumericEntryHtml<T>(MelonPreferences_Entry<T> entry)
