@@ -3,6 +3,7 @@
     <PropertyGroup>
         <Nullable>enable</Nullable>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

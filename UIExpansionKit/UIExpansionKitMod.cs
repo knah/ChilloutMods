@@ -1,16 +1,20 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using ABI_RC.Core.InteractionSystem;
 using cohtml;
 using HarmonyLib;
 using MelonLoader;
+using MelonLoader.ICSharpCode.SharpZipLib.Core;
 using UIExpansionKit;
 using UIExpansionKit.API;
 using UIExpansionKit.WebUi.Events;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.0.0", "knah")]
+[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.1.0", "knah")]
 [assembly:MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace UIExpansionKit
@@ -21,7 +25,7 @@ namespace UIExpansionKit
         private HtmlModSettingsHandler? myModSettingsHandler;
         private ViewEventSinkImpl? myMainMenuEventSink;
         
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
             ExpansionKitSettings.RegisterSettings();
 
@@ -30,11 +34,7 @@ namespace UIExpansionKit
             HarmonyInstance.Patch(
                 AccessTools.Method(typeof(ViewManager), nameof(ViewManager.UiStateToggle), new[] { typeof(bool) }),
                 postfix: new HarmonyMethod(AccessTools.Method(typeof(UiExpansionKitMod), nameof(UiStateToggleSuffix))));
-
-            HarmonyInstance.Patch(
-                AccessTools.Method(typeof(DefaultResourceHandler), nameof(DefaultResourceHandler.RequestResourceAsync)),
-                new HarmonyMethod(typeof(CohtmlDataPatch), nameof(CohtmlDataPatch.Prefix)));
-
+            
             MelonCoroutines.Start(InitThings());
         }
 
@@ -70,6 +70,53 @@ namespace UIExpansionKit
                 page.Sink = myMainMenuEventSink;
 
             FruityLogger.Msg("Init done!");
+        }
+    }
+
+    [HarmonyPatch(typeof(DefaultResourceHandler))]
+    class CohtmlDataPatch
+    {
+        private const string UrlPrefix = "uix-resource:";
+        
+        [HarmonyPatch(nameof(DefaultResourceHandler.RequestResourceAsync))]
+        [HarmonyPrefix]
+        static bool RequestResAsync(DefaultResourceHandler.ResourceRequestData requestData, IEnumerator __result)
+        {
+            var uri = requestData.UriBuilder.ToString();
+            if (!uri.StartsWith(UrlPrefix)) return true;
+
+            __result = Empty.EmptyArray<int>.Value.GetEnumerator();
+
+            uri = uri.Substring(UrlPrefix.Length);
+
+            FruityLogger.Msg($"Got data request! {(uri.Length > 100 ? uri.Substring(0, 100) : uri)}");
+
+            var data = GetResourceBytes(uri);
+            if (data == null)
+            {
+                requestData.Response.SetStatus(404);
+                requestData.RespondWithFailure("Not found");
+                return false;
+            }
+
+            var space = requestData.Response.GetSpace((ulong)data.Length);
+            Marshal.Copy(data, 0, space, data.Length);
+            requestData.Error = "";
+            requestData.RespondWithSuccess();
+
+            return false;
+        }
+        
+        private static byte[]? GetResourceBytes(string resourcePath)
+        {
+            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"UIExpansionKit.WebUi.Js.{resourcePath}");
+            if (resourceStream == null)
+                return null;
+
+            using var memStream = new MemoryStream();
+            resourceStream.CopyTo(memStream);
+
+            return memStream.ToArray();
         }
     }
 }

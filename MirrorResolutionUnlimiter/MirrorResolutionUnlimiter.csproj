@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\UIExpansionKit\UIExpansionKit.csproj">

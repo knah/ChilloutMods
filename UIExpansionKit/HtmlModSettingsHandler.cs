@@ -269,8 +269,6 @@ public class HtmlModSettingsHandler
 
     private IEnumerable<MelonPreferences_Category> GetViableCategories()
     {
-        return MelonPreferences.Categories.Where(it =>
-            !it.IsHidden && (it.Entries.Any(EntryCanBeShown) ||
-                             ExpansionKitApi.SettingPageExtensions.ContainsKey(it.Identifier)));
+        return MelonPreferences.Categories.Where(it => !it.IsHidden && (it.Entries.Any(EntryCanBeShown) || ExpansionKitApi.SettingPageExtensions.ContainsKey(it.Identifier))).OrderBy(x=>x.DisplayName);
     }
 }
