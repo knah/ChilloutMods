@@ -14,7 +14,7 @@ using UIExpansionKit.WebUi.Events;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.1.0", "knah & DDAkebono")]
+[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.1.1", "knah & DDAkebono")]
 [assembly:MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace UIExpansionKit
@@ -80,7 +80,7 @@ namespace UIExpansionKit
         
         [HarmonyPatch(nameof(DefaultResourceHandler.RequestResourceAsync))]
         [HarmonyPrefix]
-        static bool RequestResAsync(DefaultResourceHandler.ResourceRequestData requestData, IEnumerator __result)
+        static bool RequestResAsync(DefaultResourceHandler.ResourceRequestData requestData, ref IEnumerator __result)
         {
             var uri = requestData.UriBuilder.ToString();
             if (!uri.StartsWith(UrlPrefix)) return true;
