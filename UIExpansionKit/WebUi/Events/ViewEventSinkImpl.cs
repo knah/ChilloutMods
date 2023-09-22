@@ -50,23 +50,23 @@ public class ViewEventSinkImpl : IControlEventSink
 
     public void SetVisible(int globalId, bool visible)
     {
-        myView.View.TriggerEvent("UixControlSetVisible", globalId, visible);
+        myView.GetInternalView()?.TriggerEvent("UixControlSetVisible", globalId, visible);
     }
 
     public void SetText(int globalId, string text)
     {
-        myView.View.TriggerEvent("UixControlSetText", globalId, text);
+        myView.GetInternalView()?.TriggerEvent("UixControlSetText", globalId, text);
     }
 
     public void SetTextAnchor(int globalId, TextAnchor anchor)
     {
         // todo: switch here to ensure type safety
-        myView.View.TriggerEvent("UixControlSetTestAnchor", globalId, anchor.ToString());
+        myView.GetInternalView()?.TriggerEvent("UixControlSetTestAnchor", globalId, anchor.ToString());
     }
 
     public void SetSelected(int globalId, bool selected)
     {
-        myView.View.TriggerEvent("UixControlSetSelected", globalId, selected);
+        myView.GetInternalView()?.TriggerEvent("UixControlSetSelected", globalId, selected);
     }
 
     public IControlFeedbackSink? FeedbackSink { get; set; }

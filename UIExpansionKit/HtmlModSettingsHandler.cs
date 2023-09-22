@@ -32,7 +32,7 @@ public class HtmlModSettingsHandler
     private static void SendVisibility(CohtmlView mainMenuView, string category, string entry,
         ExpansionKitApi.SettingVisibilityRegistrationValue visibility)
     {
-        mainMenuView.View.TriggerEvent("UixSettingVisibilityUpdated", category, entry, visibility.IsVisible());
+        mainMenuView.GetInternalView()?.TriggerEvent("UixSettingVisibilityUpdated", category, entry, visibility.IsVisible());
     }
 
     private void DoBinds(CohtmlView mainMenuView)
@@ -63,7 +63,7 @@ public class HtmlModSettingsHandler
             {
                 if (entry.IsHidden || entry is not MelonPreferences_Entry<string> stringEntry) continue;
 
-                ViewManager.Instance.gameMenuView.View.TriggerEvent("UixSettingValueUpdated", category.Identifier,
+                ViewManager.Instance.gameMenuView.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", category.Identifier,
                     entry.Identifier, stringEntry.Value);
             }
         }
