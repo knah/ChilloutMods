@@ -20,10 +20,10 @@ public class HtmlEntriesGenerator
         EnumSetters.Clear();
     }
     
-    internal static void DoSubToEntryChange<T>(MelonPreferences_Entry<T> entry, Action<T, T> handler)
+    internal static void DoSubToEntryChange<T>(MelonPreferences_Entry<T> entry, LemonAction<T, T> handler)
     {
-        entry.OnValueChanged += handler;
-        UnsubDelegates.Add(() => entry.OnValueChanged -= handler);
+        entry.OnEntryValueChanged.Subscribe(handler);
+        UnsubDelegates.Add(() => entry.OnEntryValueChanged.Unsubscribe(handler));
     }
     
     internal static string GetDropdownHtml<T>(MelonPreferences_Entry<T> entry) where T: struct, Enum
@@ -48,7 +48,7 @@ public class HtmlEntriesGenerator
 
         DoSubToEntryChange(entry, (_, newValue) =>
         {
-            ViewManager.Instance.gameMenuView.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", category.Identifier,
+            ViewManager.Instance.gameMenuView.View.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", category.Identifier,
                 entry.Identifier, options.FindIndex(it => Equals(it.SettingsValue, newValue)));
         });
 
@@ -62,7 +62,7 @@ public class HtmlEntriesGenerator
     {
         DoSubToEntryChange(entry, (_, newValue) =>
         {
-            ViewManager.Instance.gameMenuView.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", entry.Category.Identifier,
+            ViewManager.Instance.gameMenuView.View.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", entry.Category.Identifier,
                 entry.Identifier, newValue ? "True" : "False");
         });
 

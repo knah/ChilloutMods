@@ -10,7 +10,7 @@ namespace UIExpansionKit
     internal static class Extensions
     {
         private static FieldInfo? _internalCohtmlView = typeof(CohtmlControlledViewWrapper).GetField("_view", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static CohtmlView? _lastCohtmlView;
+        private static CohtmlControlledViewWrapper? _lastCohtmlView;
         private static View? _internalViewCache;
 
         public static void DestroyChildren(this Transform parent)
@@ -25,12 +25,12 @@ namespace UIExpansionKit
             return obj;
         }
 
-        public static View? GetInternalView(this CohtmlView view)
+        public static View? GetInternalView(this CohtmlControlledViewWrapper view)
         {
-            if (view == null) return null;
-
             if ((_internalViewCache == null || _lastCohtmlView != view) && _internalCohtmlView != null)
                 _internalViewCache = (View)_internalCohtmlView.GetValue(view);
+
+            _lastCohtmlView = view;
 
             return _internalViewCache;
         }
