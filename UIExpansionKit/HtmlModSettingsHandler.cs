@@ -20,7 +20,7 @@ public class HtmlModSettingsHandler
     internal void PerformInjection(CohtmlControlledView mainMenuView)
     {
         FruityLogger.Msg($"Preparing to inject menu into {mainMenuView.gameObject.name}");
-        mainMenuView.Listener.ReadyForBindings += () => { DoBinds(mainMenuView); };
+        mainMenuView.Listener.FinishLoad += _ => { DoBinds(mainMenuView); };
         var internalView = mainMenuView.View.GetInternalView();
         if (internalView != null && internalView.IsReadyForBindings())
             DoBinds(mainMenuView);

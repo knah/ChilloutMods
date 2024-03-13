@@ -15,7 +15,7 @@ public class ViewEventSinkImpl : IControlEventSink
     {
         myView = view;
 
-        myView.Listener.ReadyForBindings += AttachBindings;
+        myView.Listener.FinishLoad += _ => AttachBindings();
         var internalView = myView.View.GetInternalView();
         if (internalView != null && internalView.IsReadyForBindings())
             AttachBindings();

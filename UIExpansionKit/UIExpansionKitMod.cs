@@ -11,7 +11,7 @@ using UIExpansionKit;
 using UIExpansionKit.API;
 using UIExpansionKit.WebUi.Events;
 
-[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.1.3", "knah & DDAkebono")]
+[assembly:MelonInfo(typeof(UiExpansionKitMod), "UI Expansion Kit", "1.1.4", "knah & DDAkebono")]
 [assembly:MelonGame("Alpha Blend Interactive", "ChilloutVR")]
 
 namespace UIExpansionKit
