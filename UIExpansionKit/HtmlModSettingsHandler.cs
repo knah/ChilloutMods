@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using ABI_RC.Core.InteractionSystem;
+using ABI_RC.Core.UI;
 using cohtml;
 using HarmonyLib;
 using MelonLoader;
@@ -16,11 +17,12 @@ namespace UIExpansionKit;
 
 public class HtmlModSettingsHandler
 {
-    internal void PerformInjection(CohtmlView mainMenuView)
+    internal void PerformInjection(CohtmlControlledView mainMenuView)
     {
         FruityLogger.Msg($"Preparing to inject menu into {mainMenuView.gameObject.name}");
-        mainMenuView.Listener.ReadyForBindings += () => { DoBinds(mainMenuView); };
-        if (mainMenuView.View.IsReadyForBindings())
+        mainMenuView.Listener.FinishLoad += _ => { DoBinds(mainMenuView); };
+        var internalView = mainMenuView.View.GetInternalView();
+        if (internalView != null && internalView.IsReadyForBindings())
             DoBinds(mainMenuView);
 
         ExpansionKitApi.SettingsVisibilityUpdated += (category, entry, visibility) =>
@@ -29,13 +31,13 @@ public class HtmlModSettingsHandler
         };
     }
 
-    private static void SendVisibility(CohtmlView mainMenuView, string category, string entry,
+    private static void SendVisibility(CohtmlControlledView mainMenuView, string category, string entry,
         ExpansionKitApi.SettingVisibilityRegistrationValue visibility)
     {
-        mainMenuView.View.TriggerEvent("UixSettingVisibilityUpdated", category, entry, visibility.IsVisible());
+        mainMenuView.View.GetInternalView()?.TriggerEvent("UixSettingVisibilityUpdated", category, entry, visibility.IsVisible());
     }
 
-    private void DoBinds(CohtmlView mainMenuView)
+    private void DoBinds(CohtmlControlledView mainMenuView)
     {
         FruityLogger.Msg("Adding settings binds");
         mainMenuView.View.RegisterForEvent("UixSetBoolSetting", SetBoolSettingFromJs);
@@ -49,7 +51,7 @@ public class HtmlModSettingsHandler
         mainMenuView.View.BindCall("UixGetSettingsHtml", GetHtmlForCategoriesListFromJs);
 
         FruityLogger.Msg("Executing injected JS");
-        mainMenuView.View.ExecuteScript(GetInjectorJs());
+        mainMenuView.View.GetInternalView()?.ExecuteScript(GetInjectorJs());
     }
 
     private void ResubmitSettingVisibilities()
@@ -63,7 +65,7 @@ public class HtmlModSettingsHandler
             {
                 if (entry.IsHidden || entry is not MelonPreferences_Entry<string> stringEntry) continue;
 
-                ViewManager.Instance.gameMenuView.View.TriggerEvent("UixSettingValueUpdated", category.Identifier,
+                ViewManager.Instance.gameMenuView.View.GetInternalView()?.TriggerEvent("UixSettingValueUpdated", category.Identifier,
                     entry.Identifier, stringEntry.Value);
             }
         }
@@ -269,8 +271,6 @@ public class HtmlModSettingsHandler
 
     private IEnumerable<MelonPreferences_Category> GetViableCategories()
     {
-        return MelonPreferences.Categories.Where(it =>
-            !it.IsHidden && (it.Entries.Any(EntryCanBeShown) ||
-                             ExpansionKitApi.SettingPageExtensions.ContainsKey(it.Identifier)));
+        return MelonPreferences.Categories.Where(it => !it.IsHidden && (it.Entries.Any(EntryCanBeShown) || ExpansionKitApi.SettingPageExtensions.ContainsKey(it.Identifier))).OrderBy(x=>x.DisplayName);
     }
 }

@@ -1,6 +1,9 @@
 
 let handlerMap = {}
 let visibilityHandlerMap = {}
+let lastStringElement = {}
+let lastStringCategory = ""
+let lastStringEntry = ""
 
 function inp_toggle_uix(_obj) {
     let result = {}
@@ -189,11 +192,19 @@ engine.on("UixSettingVisibilityUpdated", function(cat, entry, visible) {
     }
 })
 
-function UIX_StringSettingUpdated(_e) {
-    let cat = _e.getAttribute('data-uix-cat')
-    let entry = _e.getAttribute('data-uix-entry')
+function UIX_StringOpenKeyboard(element) {
+    lastStringCategory = element.getAttribute('data-uix-cat')
+    lastStringEntry = element.getAttribute('data-uix-entry')
+    lastStringElement = element;
+    displayKeyboard(element);
+}
 
-    engine.trigger("UixSetString", cat, entry, _e.value)
+function UIX_StringSettingUpdated() {
+    if(lastStringElement === null) return;
+    if(lastStringEntry === "") return;
+    if(lastStringCategory === "") return;
+
+    engine.trigger("UixSetString", lastStringCategory, lastStringEntry, lastStringElement.value)
 }
 
 function switchUixCat(_id, _e) {
@@ -216,3 +227,9 @@ UIX_updateCategoriesBodies()
 
 let settingsButton = document.getElementsByClassName("tab_btn_settings")[0]
 settingsButton.insertAdjacentHTML('afterend', `<div class="toolbar-btn tab_btn_settings button" onclick="changeTab(\'uix-settings\', this);"><img src="uix-resource:twemoji-melon.svg"/>Mòwóds</div>`)
+
+let searchButton = document.getElementById("search-btn")
+searchButton.style.width = "95%"
+searchButton.style.paddingLeft = "8px"
+searchButton.style.paddingTop = "5px"
+
