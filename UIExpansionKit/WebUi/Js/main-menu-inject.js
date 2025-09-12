@@ -1,6 +1,9 @@
 
 let handlerMap = {}
 let visibilityHandlerMap = {}
+let lastStringElement = {}
+let lastStringCategory = ""
+let lastStringEntry = ""
 
 function inp_toggle_uix(_obj) {
     let result = {}
@@ -189,11 +192,31 @@ engine.on("UixSettingVisibilityUpdated", function(cat, entry, visible) {
     }
 })
 
-function UIX_StringSettingUpdated(_e) {
-    let cat = _e.getAttribute('data-uix-cat')
-    let entry = _e.getAttribute('data-uix-entry')
+function UIX_StringOpenKeyboard(element) {
+    lastStringCategory = element.getAttribute('data-uix-cat')
+    lastStringEntry = element.getAttribute('data-uix-entry')
+    lastStringElement = element;
 
-    engine.trigger("UixSetString", cat, entry, _e.value)
+    if(!element.id){
+        element.id = "_" + guidGenerator();
+    }
+
+    displayKeyboard(element);
+}
+
+function guidGenerator() {
+    var S4 = function() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
+function UIX_StringSettingUpdated() {
+    if(lastStringElement === null) return;
+    if(lastStringEntry === "") return;
+    if(lastStringCategory === "") return;
+
+    engine.trigger("UixSetString", lastStringCategory, lastStringEntry, lastStringElement.value)
 }
 
 function switchUixCat(_id, _e) {
@@ -214,5 +237,10 @@ function switchUixCat(_id, _e) {
 
 UIX_updateCategoriesBodies()
 
-let settingsButton = document.getElementsByClassName("tab_btn_settings")[0]
-settingsButton.insertAdjacentHTML('afterend', `<div class="toolbar-btn tab_btn_settings button" onclick="changeTab(\'uix-settings\', this);"><img src="uix-resource:twemoji-melon.svg"/>Mòwóds</div>`)
+let hiddenButton = document.querySelector("#empty-home-button-block .action-btn");
+hiddenButton.style.visibility = '';
+hiddenButton.innerHTML = "<img src=\"uix-resource:twemoji-melon.svg\"/>Mòwóds";
+hiddenButton.addEventListener("click", function(e) {
+    changeTab('uix-settings', this);
+    hiddenButton.classList.remove("active");
+})

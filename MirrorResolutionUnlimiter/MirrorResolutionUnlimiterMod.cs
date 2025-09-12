@@ -4,8 +4,8 @@ using MelonLoader;
 using MirrorResolutionUnlimiter;
 using UnityEngine;
 
-[assembly:MelonInfo(typeof(MirrorResolutionUnlimiterMod), "MirrorResolutionUnlimiter", "1.0.0", "knah", "https://github.com/knah/ChilloutMods")]
-[assembly:MelonGame("Alpha Blend Interactive", "ChilloutVR")]
+[assembly:MelonInfo(typeof(MirrorResolutionUnlimiterMod), "MirrorResolutionUnlimiter", "1.0.1", "knah & DDAkebono", "https://github.com/ddakebono/ChilloutMods")]
+[assembly:MelonGame("ChilloutVR", "ChilloutVR")]
 [assembly:MelonOptionalDependencies("UIExpansionKit")]
 
 namespace MirrorResolutionUnlimiter
@@ -24,19 +24,19 @@ namespace MirrorResolutionUnlimiter
 
             var category = MelonPreferences.CreateCategory(SettingsCategory, "Mirror Resolution");
             var forceAutoRes = category.CreateEntry("AllMirrorsUseAutoRes", false, "Force auto resolution");
-            forceAutoRes.OnValueChanged += (_, v) =>
+            forceAutoRes.OnEntryValueChanged.Subscribe((_, v) =>
             {
                 ourAllMirrorsAuto = v;
-                UpdateMirrorParams();
-            };
+                UpdateMirrorParams(null, null);
+            });
             ourAllMirrorsAuto = forceAutoRes.Value;
             
             myPixelLightsSetting = category.CreateEntry("PixelLights", PixelLightMode.Default, "Pixel lights in mirrors");
-            myPixelLightsSetting.OnValueChangedUntyped += UpdateMirrorParams;
+            myPixelLightsSetting.OnEntryValueChangedUntyped.Subscribe(UpdateMirrorParams);
 
             UiInMirrors = category.CreateEntry("UiInMirrors", false, "Include UI in mirrors when using Optimize/Beautify buttons");
 
-            if (MelonHandler.Mods.Any(it => it.Info.Name == "UI Expansion Kit"))
+            if (RegisteredMelons.Any(it => it.Info.Name == "UI Expansion Kit"))
             {
                 MelonLogger.Msg("Adding UIExpansionKit buttons");
                 UiExtensionsAddon.Init();
@@ -55,10 +55,10 @@ namespace MirrorResolutionUnlimiter
                 store.OriginalTextureRes = mirror.m_TextureSize;
             }
 
-            UpdateMirrorParams();
+            UpdateMirrorParams(null, null);
         }
 
-        private void UpdateMirrorParams()
+        private void UpdateMirrorParams(object _, object __)
         {
             var allMirrors = Resources.FindObjectsOfTypeAll<CVRMirror>();
             var pixelLightMode = myPixelLightsSetting.Value;
@@ -73,7 +73,7 @@ namespace MirrorResolutionUnlimiter
                 };
                 mirror.m_TextureSize = ourAllMirrorsAuto ? 65536
                     : mirror.gameObject.GetComponent<OriginalMirrorSettingKeeper>()?.OriginalTextureRes ?? mirror.m_TextureSize;
-                mirror.updateRenderResolution();
+                //mirror.updateRenderResolution();
             }
         }
 
